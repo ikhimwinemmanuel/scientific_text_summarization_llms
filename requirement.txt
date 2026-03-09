@@ -1,0 +1,11 @@
+arxiv
+beautifulsoup4
+requests
+PyMuPDF
+pandas
+numpy
+scikit-learn
+matplotlib
+evaluate
+bert-score
+sentence-transformers
