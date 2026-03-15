@@ -5,13 +5,14 @@ This module implements the sentence-level semantic similarity
 metric using Hungarian matching.
 """
 
+import nltk
+nltk.download('punkt_tab')
 
 def split_into_sentences(text: str) -> list[str]:
     """
-    Split input text into sentences using a simple rule-based approach.
+    Split input text into sentences using NLTK's sentence tokenizer.
     """
-    sentences = [s.strip() for s in text.split(".") if s.strip()]
-    return [s + "." for s in sentences]
+    return nltk.sent_tokenize(text)
 
 
 def main():
