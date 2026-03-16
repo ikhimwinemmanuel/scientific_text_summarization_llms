@@ -7,6 +7,7 @@ metric using Hungarian matching.
 
 import nltk
 from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 def split_into_sentences(text: str) -> list[str]:
@@ -32,24 +33,44 @@ def embed_sentences(sentences: list[str], model: SentenceTransformer):
     return embeddings
 
 
+def build_similarity_matrix(ref_sentences: list[str], gen_sentences: list[str], model: SentenceTransformer):
+    """
+    Build a sentence-level cosine similarity matrix between
+    reference and generated summary sentences.
+    """
+    ref_embeddings = embed_sentences(ref_sentences, model)
+    gen_embeddings = embed_sentences(gen_sentences, model)
+
+    similarity_matrix = cosine_similarity(ref_embeddings, gen_embeddings)
+    return similarity_matrix
+
+
 def main():
-    sample_text = (
+    reference_text = (
         "Large language models are increasingly used in summarization. "
-        "They can generate fluent outputs. "
-        "However, evaluation remains difficult. "
-        "Existing metrics do not always capture semantic structure."
+        "They can produce fluent summaries. "
+        "However, evaluating summary quality remains difficult. "
+        "Existing metrics do not always capture semantic meaning."
     )
 
-    sentences = split_into_sentences(sample_text)
+    generated_text = (
+        "Large language models are widely applied in summarization tasks. "
+        "They often generate fluent outputs. "
+        "Still, summary evaluation remains challenging. "
+        "Traditional metrics may fail to capture meaning."
+    )
+
+    ref_sentences = split_into_sentences(reference_text)
+    gen_sentences = split_into_sentences(generated_text)
+
     model = load_embedding_model()
-    embeddings = embed_sentences(sentences, model)
+    similarity_matrix = build_similarity_matrix(ref_sentences, gen_sentences, model)
 
-    print("Sentence count:", len(sentences))
-    print("Embedding count:", len(embeddings))
-    print("First embedding length:", len(embeddings[0]))
-
-    for i, sentence in enumerate(sentences, start=1):
-        print(f"{i}. {sentence}")
+    print("Reference sentence count:", len(ref_sentences))
+    print("Generated sentence count:", len(gen_sentences))
+    print("Similarity matrix shape:", similarity_matrix.shape)
+    print("\nSimilarity matrix:")
+    print(similarity_matrix)
 
 
 if __name__ == "__main__":
