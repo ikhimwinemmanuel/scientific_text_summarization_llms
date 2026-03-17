@@ -72,6 +72,6 @@ def main():
     print("\nSimilarity matrix:")
     print(similarity_matrix)
 
-
+ 
 if __name__ == "__main__":
     main()
