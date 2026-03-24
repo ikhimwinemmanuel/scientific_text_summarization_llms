@@ -40,6 +40,7 @@ def build_similarity_matrix(ref_sentences: list[str], gen_sentences: list[str], 
     Build a sentence-level cosine similarity matrix between
     reference and generated summary sentences.
     """
+    
     ref_embeddings = embed_sentences(ref_sentences, model)
     gen_embeddings = embed_sentences(gen_sentences, model)
 
