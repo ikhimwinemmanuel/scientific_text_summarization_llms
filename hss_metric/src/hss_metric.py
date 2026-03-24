@@ -8,6 +8,8 @@ metric using Hungarian matching.
 import nltk
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.optimize import linear_sum_assignment
+import numpy as np
 
 
 def split_into_sentences(text: str) -> list[str]:
@@ -42,7 +44,18 @@ def build_similarity_matrix(ref_sentences: list[str], gen_sentences: list[str], 
     gen_embeddings = embed_sentences(gen_sentences, model)
 
     similarity_matrix = cosine_similarity(ref_embeddings, gen_embeddings)
+    similarity_matrix = np.maximum(similarity_matrix, 0)
+
     return similarity_matrix
+
+
+def apply_hungarian_matching(similarity_matrix):
+    """
+    Apply Hungarian matching to maximize total sentence similarity.
+    """
+    cost_matrix = 1 - similarity_matrix
+    row_ind, col_ind = linear_sum_assignment(cost_matrix)
+    return row_ind, col_ind
 
 
 def main():
@@ -65,13 +78,15 @@ def main():
 
     model = load_embedding_model()
     similarity_matrix = build_similarity_matrix(ref_sentences, gen_sentences, model)
+    row_ind, col_ind = apply_hungarian_matching(similarity_matrix)
 
-    print("Reference sentence count:", len(ref_sentences))
-    print("Generated sentence count:", len(gen_sentences))
-    print("Similarity matrix shape:", similarity_matrix.shape)
-    print("\nSimilarity matrix:")
-    print(similarity_matrix)
+    print("Hungarian matches:")
+    for r, c in zip(row_ind, col_ind):
+        print(
+            f"R{r+1} -> G{c+1} | "
+            f"similarity = {similarity_matrix[r, c]:.4f}"
+        )
 
- 
+
 if __name__ == "__main__":
     main()
