@@ -134,7 +134,7 @@ scientific_text_summarization_llms/
 
 ## Status
 
-🚧 This project is currently in progress as part of a Master’s level project 
+This project is currently in progress 
 
 ---
 
