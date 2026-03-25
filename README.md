@@ -120,13 +120,13 @@ scientific_text_summarization_llms/
 │   │   ├── processed/
 │   │   └── raw/
 │   ├── outputs/
-│   ├── src/
-│   │   ├── download_arxiv_papers.py
-│   │   └── test_run.py
+│   └── src/
+│       ├── download_arxiv_papers.py
+│       └── test_run.py
 │
 ├── .gitignore
 ├── README.md
-├── requirements.txt
+└── requirements.txt
 
 ```
 
