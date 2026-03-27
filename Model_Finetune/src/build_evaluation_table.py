@@ -23,11 +23,11 @@ def build_table(records):
             "no": i,
             "arxiv_id": rec["arxiv_id"],
             "title": rec["title"],
-            "abstract": rec["reference_abstract"],
-            "generated_summary": rec["generated_summary"],
+            "abstract": rec["reference_abstract"].replace("\n", " "),
+            "generated_summary": rec["generated_summary"].replace("\n", " "),
             "rouge_score": "",
             "bertscore": "",
-            "human_score": ""
+            "human_score": "" 
         })
     return pd.DataFrame(rows)
 
