@@ -16,7 +16,7 @@ It builds on a previous Project(A) where the benchmarking of multiple transforme
 
   * ROUGE
   * BERTScore
-  * A proposed metric: **HSSM (Hungarian Summary Similarity Metric)**
+  * A proposed Evaluation metric: **HSSM (Hungarian Summary Similarity Metric)**
 
 ---
 
@@ -43,7 +43,7 @@ From this benchmarking, **LED** was identified as the best-performing model.
 Existing evaluation metrics have limitations:
 
 * **ROUGE** focuses on surface-level word overlap
-* **BERTScore** captures semantic similarity but operates at the token level using greedy matching
+* **BERTScore** captures semantic similarity but operates at the token level
 
 These approaches:
 
@@ -73,7 +73,6 @@ This approach ensures that each sentence is matched uniquely, improving the reli
 ## Current Progress
 
 * Repository structure established
-* Benchmarking pipeline (Project A) completed
 * Dataset collection and preprocessing implemented
 * HSSM design defined
 * Initial implementation of HSSM pipeline in progress
@@ -98,7 +97,7 @@ This approach ensures that each sentence is matched uniquely, improving the reli
 * Python
 * Hugging Face Transformers
 * PyTorch
-* Sentence-Transformers (`all-mpnet-base-v2`)
+* Sentence-Transformers
 * SciPy (Hungarian algorithm)
 * Evaluation libraries (ROUGE, BERTScore)
 
@@ -141,5 +140,5 @@ This project is currently in progress
 ## Author
 
 Emmanuel Ikhimwin
-Master of Artificial Intelligence
-Western Sydney University
+Master of Artificial Intelligence candidate
+
