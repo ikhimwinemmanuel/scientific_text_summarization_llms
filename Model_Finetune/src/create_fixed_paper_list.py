@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 QUERY = "cat:cs.*"
-MAX_RESULTS = 10
+MAX_RESULTS = 1000
 
 OUTPUT_PATH = Path("Model_Finetune/data/processed/fixed_papers.jsonl")
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
