@@ -4,7 +4,7 @@
 
 This project explores the use of Large Language Models (LLMs) for scientific text summarization, with a focus on both model performance and evaluation methods.
 
-It builds on a previous Project(A) where the benchmarking of multiple transformer-based models from huggingface were evaluated on scientific papers from Arxiv. In this stage Project(B), the focus shifts towards improving model performance and developing a more robust evaluation metric.
+It builds on a previous Project (A) where the benchmarking of multiple transformer-based models from Hugging Face (Text-to-Text Transfer Transformer (T5) Large, Pegasus, Longformer Encoder-Decoder (LED)) were all evaluated on how effectively they summarise the introduction part of scientific papers obtained from arXiv. Their generated summaries were compared based on how aligned they were with the authors’ abstracts using existing specialised summary evaluation metrics like ROUGE-L and BERTScore. In this stage of the project, Project (B), the focus shifts towards improving model performance by fine-tuning with a specialised parameter-efficient technique known as Quantised Low-Rank Adaptation (QLoRA) and the development of a more robust evaluation metric called the Hungarian Summary Similarity Metric (HSSM) to track the performance of Large Language Models in summarisation tasks.
 
 ---
 
@@ -38,20 +38,6 @@ From this benchmarking, **LED** was identified as the best-performing model.
 
 ---
 
-## Motivation
-
-Existing evaluation metrics have limitations:
-
-* **ROUGE** focuses on surface-level word overlap
-* **BERTScore** captures semantic similarity but operates at the token level
-
-These approaches:
-
-* Do not capture sentence-level structure
-* May overestimate similarity due to repeated matching
-
-This motivates the need for a more structured evaluation method.
-
 ---
 
 ## Proposed Method: HSSM
@@ -73,7 +59,7 @@ This approach ensures that each sentence is matched uniquely, improving the reli
 ## Current Progress
 
 * Repository structure established
-* Dataset collection and preprocessing implemented
+* Dataset collection and preprocessing implemention from Arxiv
 * HSSM design defined
 * Initial implementation of HSSM pipeline in progress
 
@@ -81,7 +67,7 @@ This approach ensures that each sentence is matched uniquely, improving the reli
 
 ## Next Steps
 
-* Fine-tune the LED model on scientific text data
+* Fine-tune the LED model on scientific text data using QLORA Technique
 * Run full evaluation across:
 
   * ROUGE
