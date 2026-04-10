@@ -5,8 +5,8 @@ __pycache__/
 .DS_Store
 
 # data 
-data/raw/*
-data/processed/*
+model_finetune/data/raw/*
+model_finetune/data/processed/*
 
 
 # outputs 
