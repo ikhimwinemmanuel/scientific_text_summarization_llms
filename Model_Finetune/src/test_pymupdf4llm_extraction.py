@@ -1,18 +1,29 @@
-from pathlib import Path
+import json
 import re
+from pathlib import Path
 import pymupdf4llm
 
-PDF_DIR = Path("Model_Finetune/data/raw/pdfs")
+INPUT_PATH = Path("model_finetune/data/processed/fixed_papers.jsonl")
+PDF_DIR = Path("model_finetune/data/raw/pdfs")
+OUTPUT_PATH = Path("model_finetune/data/processed/final_dataset.jsonl")
+
+
+def load_jsonl(path):
+    records = []
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            records.append(json.loads(line.strip()))
+    return records
 
 
 def normalize_text(text):
     return re.sub(r"\s+", " ", text).strip()
 
+
 def clean_section_text(text):
     if not text:
         return None
 
-    # Remove picture markers and related noise
     text = re.sub(r"\*\*==> picture.*?<==\*\*", " ", text, flags=re.IGNORECASE)
     text = re.sub(
         r"\*\*----- Start of picture text -----\*\*.*?\*\*----- End of picture text -----\*\*",
@@ -20,8 +31,6 @@ def clean_section_text(text):
         text,
         flags=re.IGNORECASE | re.DOTALL
     )
-
-    # To remove figure/table captions from the captured section
     text = re.sub(
         r"\bFigure\s+\d+.*?(?=\bFigure\s+\d+\b|$)",
         " ",
@@ -34,17 +43,15 @@ def clean_section_text(text):
         text,
         flags=re.IGNORECASE | re.DOTALL
     )
-
-    # to remove markdown symbols that may remain
     text = re.sub(r"[*`#<>_]", " ", text)
-
+    text = re.sub(r"\b\d+\s*br\b", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"\[\d+(?:,\s*\d+)*\]", " ", text)
     return normalize_text(text)
 
 
 def extract_abstract(md_text):
     text = normalize_text(md_text)
 
-    # if explicit Abstract heading exists
     explicit_pattern = re.compile(
         r"\babstract\b[:\s]*(.*?)(?=\b(?:1\.?\s*introduction|introduction)\b)",
         re.IGNORECASE
@@ -53,14 +60,12 @@ def extract_abstract(md_text):
     if match:
         return clean_section_text(match.group(1).strip())
 
-    # if no explicit Abstract heading
     intro_match = re.search(r"\b(?:1\.?\s*introduction|introduction)\b", text, re.IGNORECASE)
     if not intro_match:
         return None
 
     before_intro = text[:intro_match.start()].strip()
 
-    # Remove common metadata-like parts
     split_markers = [
         r"\bcorrespondence\b.*?(?=\bdate\b|$)",
         r"\bdate\b.*?$",
@@ -74,16 +79,17 @@ def extract_abstract(md_text):
 
     candidate = clean_section_text(candidate)
 
-    # Keep the later sentence block, which is more likely to be the abstract
     sentences = re.split(r"(?<=[.!?])\s+", candidate)
-    if len(sentences) >= 4:
-        return " ".join(sentences[-8:]).strip()
+    filtered = [s for s in sentences if len(s.split()) > 8]
 
-    return candidate if candidate else None
+    if len(filtered) >= 3:
+        return " ".join(filtered[-6:]).strip()
+
+    return " ".join(filtered).strip() if filtered else None
 
 
-def extract_introduction(text):
-    text = normalize_text(text)
+def extract_introduction(md_text):
+    text = normalize_text(md_text)
 
     pattern = re.compile(
         r"\b(?:1\.?\s*introduction|introduction)\b(.*?)(?=\b(?:2\.|related work|background|method|methods|approach)\b)",
@@ -110,32 +116,48 @@ def extract_conclusion(md_text):
 
 
 def main():
-    pdf_files = list(PDF_DIR.glob("*.pdf"))
+    records = load_jsonl(INPUT_PATH)
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    if not pdf_files:
-        print("No PDF files found.")
-        return
+    saved_count = 0
+    skipped_count = 0
 
-    sample_pdf = pdf_files[0]
-    print(f"Testing PDF: {sample_pdf.name}")
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        for record in records:
+            arxiv_id = record["arxiv_id"]
+            title = record["title"]
+            pdf_path = PDF_DIR / f"{arxiv_id}.pdf"
 
-    md_text = pymupdf4llm.to_markdown(str(sample_pdf))
+            if not pdf_path.exists():
+                print(f"Skipping {arxiv_id}: PDF not found")
+                skipped_count += 1
+                continue
 
-    print("\n--- FIRST 2000 CHARACTERS OF MARKDOWN ---\n")
-    print(md_text[:2000])
+            try:
+                md_text = pymupdf4llm.to_markdown(str(pdf_path))
 
-    abstract = extract_abstract(md_text)
-    introduction = extract_introduction(md_text)
-    conclusion = extract_conclusion(md_text)
+                abstract = extract_abstract(md_text)
+                introduction = extract_introduction(md_text)
+                conclusion = extract_conclusion(md_text)
 
-    print("\n--- ABSTRACT ---\n")
-    print(abstract[:1500] if abstract else "Abstract not found")
+                output_record = {
+                    "arxiv_id": arxiv_id,
+                    "title": title,
+                    "abstract": abstract,
+                    "introduction": introduction,
+                    "conclusion": conclusion
+                }
 
-    print("\n--- INTRODUCTION ---\n")
-    print(introduction[:1500] if introduction else "Introduction not found")
+                f.write(json.dumps(output_record, ensure_ascii=False) + "\n")
+                saved_count += 1
+                print(f"Saved {arxiv_id}")
 
-    print("\n--- CONCLUSION ---\n")
-    print(conclusion[:1500] if conclusion else "Conclusion not found")
+            except Exception as e:
+                print(f"Error processing {arxiv_id}: {e}")
+                skipped_count += 1
+
+    print(f"\nDone. Saved: {saved_count}, Skipped: {skipped_count}")
+    print(f"Dataset written to: {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
