@@ -121,12 +121,26 @@ def main():
     records = load_jsonl(INPUT_PATH)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
+    processed_ids = set()
+
+    if OUTPUT_PATH.exists():
+        with open(OUTPUT_PATH, "r", encoding="utf-8") as existing_file:
+            for line in existing_file:
+                try:
+                    rec = json.loads(line)
+                    processed_ids.add(rec["arxiv_id"])
+                except Exception:
+                    continue
+
     saved_count = 0
     skipped_count = 0
 
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+    with open(OUTPUT_PATH, "a", encoding="utf-8") as f:
         for record in tqdm(records, desc="Extracting sections", unit="paper"):
             arxiv_id = record["arxiv_id"]
+            if arxiv_id in processed_ids:
+                continue
+
             title = record["title"]
             pdf_path = PDF_DIR / f"{arxiv_id}.pdf"
 
