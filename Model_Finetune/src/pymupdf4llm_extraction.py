@@ -155,7 +155,7 @@ def main():
                 abstract = extract_abstract(md_text)
                 introduction = extract_introduction(md_text)
                 conclusion = extract_conclusion(md_text)
-
+ 
                 output_record = {
                     "arxiv_id": arxiv_id,
                     "title": title,
