@@ -5,9 +5,9 @@ import pymupdf4llm
 from tqdm import tqdm
 
 
-INPUT_PATH = Path("Model_Finetune/data/processed/fixed_papers.jsonl")
-PDF_DIR = Path("Model_Finetune/data/raw/pdfs")
-OUTPUT_PATH = Path("Model_Finetune/data/processed/final_dataset.jsonl")
+INPUT_PATH = Path("model_finetune/data/processed/fixed_papers.jsonl")
+PDF_DIR = Path("model_finetune/data/raw/pdfs")
+OUTPUT_PATH = Path("model_finetune/data/processed/final_dataset.jsonl")
 
 
 def load_jsonl(path):
@@ -160,3 +160,6 @@ def main():
 
     print(f"\nDone. Saved: {saved_count}, Skipped: {skipped_count}")
     print(f"Dataset written to: {OUTPUT_PATH}")
+
+if __name__== "__main__":
+    main()
