@@ -2,6 +2,8 @@ import json
 import re
 from pathlib import Path
 import pymupdf4llm
+from tqdm import tqdm
+
 
 INPUT_PATH = Path("model_finetune/data/processed/fixed_papers.jsonl")
 PDF_DIR = Path("model_finetune/data/raw/pdfs")
@@ -123,13 +125,13 @@ def main():
     skipped_count = 0
 
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        for record in records:
+        for record in tqdm(records, desc="Extracting sections", unit="paper"):
             arxiv_id = record["arxiv_id"]
             title = record["title"]
             pdf_path = PDF_DIR / f"{arxiv_id}.pdf"
 
             if not pdf_path.exists():
-                print(f"Skipping {arxiv_id}: PDF not found")
+                tqdm.write(f"Skipping {arxiv_id}: PDF not found")
                 skipped_count += 1
                 continue
 
@@ -150,15 +152,11 @@ def main():
 
                 f.write(json.dumps(output_record, ensure_ascii=False) + "\n")
                 saved_count += 1
-                print(f"Saved {arxiv_id}")
+                tqdm.write(f"Saved {arxiv_id}")
 
             except Exception as e:
-                print(f"Error processing {arxiv_id}: {e}")
+                tqdm.write(f"Error processing {arxiv_id}: {e}")
                 skipped_count += 1
 
     print(f"\nDone. Saved: {saved_count}, Skipped: {skipped_count}")
     print(f"Dataset written to: {OUTPUT_PATH}")
-
-
-if __name__ == "__main__":
-    main()
