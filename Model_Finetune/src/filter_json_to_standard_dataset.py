@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 INPUT = Path("Model_Finetune/data/processed/final_dataset.jsonl")
-OUTPUT = Path("Model_Finetune/data/processed/final_dataset_clean.jsonl")
+OUTPUT = Path("Model_Finetune/data/processed/final_dataset_cleanv2.jsonl")
 
 
 def word_count(text):
