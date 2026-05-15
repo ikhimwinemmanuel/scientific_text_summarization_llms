@@ -11,3 +11,10 @@ model_finetune/data/processed/*
 
 # outputs 
 outputs/*.csv
+
+# data
+Model_Finetune/data/raw/*
+Model_Finetune/data/processed/*
+
+# outputs
+Model_Finetune/outputs/*
