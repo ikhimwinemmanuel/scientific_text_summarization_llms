@@ -1,3 +1,4 @@
+import re
 import json
 import random
 from pathlib import Path
@@ -16,13 +17,19 @@ OUTPUT_PATH = Path("Model_Finetune/data/processed/train_arxiv_5000.jsonl")
 
 def clean_text(text):
     """
-    Basic whitespace cleaning only.
-    We avoid heavy cleaning because scientific terminology and structure
-    should be preserved for summarisation fine-tuning.
+    Light cleaning for arXiv summarisation data.
+
+    Removes citation placeholders and normalises mathematical placeholders.
+    Heavy cleaning is avoided so scientific meaning is preserved.
     """
     if text is None:
         return ""
-    return " ".join(text.split())
+
+    text = re.sub(r"@xcite", " ", text)
+    text = re.sub(r"@xmath\d*", " [MATH] ", text)
+    text = re.sub(r"\s+", " ", text)
+
+    return text.strip()
 
 
 def save_jsonl(records, output_path):
