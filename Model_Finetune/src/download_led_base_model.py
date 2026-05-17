@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
 MODEL_NAME = "allenai/led-base-16384"
-OUTPUT_DIR = Path("model_finetune/models/led-base-16384")
+OUTPUT_DIR = Path("Model_Finetune/models/led-base-16384")
 
 
 def main():
