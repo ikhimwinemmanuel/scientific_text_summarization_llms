@@ -19,7 +19,7 @@ from peft import (
 )
 
 
-MODEL_NAME = "allenai/led-base-16384"
+MODEL_NAME = "Model_Finetune/models/led-base-16384"
 
 TRAIN_PATH = Path("Model_Finetune/data/processed/train_arxiv_5000.jsonl")
 OUTPUT_DIR = Path("Model_Finetune/outputs/led_qlora_test")
@@ -76,7 +76,7 @@ def main():
     print(f"Loaded {len(dataset)} records")
 
     print("Loading tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME,local_files_only=True)
 
     use_bf16 = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
     compute_dtype = torch.bfloat16 if use_bf16 else torch.float16
@@ -95,6 +95,7 @@ def main():
         MODEL_NAME,
         quantization_config=quant_config,
         device_map="auto",
+        local_files_only=True
     )
 
     model = prepare_model_for_kbit_training(model)
