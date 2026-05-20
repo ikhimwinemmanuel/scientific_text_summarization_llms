@@ -152,7 +152,6 @@ def main():
         model=model,
         args=training_args,
         train_dataset=tokenized_dataset,
-        tokenizer=tokenizer,
         data_collator=data_collator,
     )
 
