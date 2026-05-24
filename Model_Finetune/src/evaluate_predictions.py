@@ -20,7 +20,9 @@ OUTPUT_DIR = Path("Model_Finetune/outputs/evaluation")
 RESULTS_CSV = OUTPUT_DIR / "evaluation_results_370.csv"
 SUMMARY_CSV = OUTPUT_DIR / "evaluation_summary_370.csv"
 
-HSSM_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
+# Local sentence-transformer model copied to Wolffe.
+# This prevents Wolffe from trying to download from Hugging Face.
+HSSM_MODEL_NAME = "Model_Finetune/models/all-mpnet-base-v2"
 
 
 def load_jsonl(path):
@@ -36,6 +38,7 @@ def load_jsonl(path):
 def word_count(text):
     if not text:
         return 0
+
     return len(text.split())
 
 
@@ -72,7 +75,7 @@ def compute_hssm(candidate, reference, embedding_model):
 
     similarity_matrix = cosine_similarity(candidate_embeddings, reference_embeddings)
 
-    # Hungarian algorithm minimizes cost, so use negative similarity as cost.
+    # Hungarian algorithm minimizes cost, so we use negative similarity as cost.
     row_indices, col_indices = linear_sum_assignment(-similarity_matrix)
 
     matched_scores = similarity_matrix[row_indices, col_indices]
@@ -90,12 +93,15 @@ def evaluate_model(records, model_label, rouge, embedding_model, bert_device):
     references = [record["reference_summary"] for record in records]
 
     print(f"Computing BERTScore for {model_label}...")
+
+    # Use local model path to avoid Hugging Face download on Wolffe.
     _, _, bert_f1_scores = bert_score(
         candidates,
         references,
-        lang="en",
+        model_type=HSSM_MODEL_NAME,
         device=bert_device,
         verbose=True,
+        rescale_with_baseline=False,
     )
 
     print(f"Computing ROUGE-L and HSSM for {model_label}...")
@@ -186,6 +192,7 @@ def plot_metric_distributions(results_df):
     tick_labels = []
 
     pos = 1
+
     for metric, label in zip(metrics, labels):
         base_values = results_df[results_df["model"] == "base_led"][metric].values
         finetuned_values = results_df[results_df["model"] == "led_qlora_5000"][metric].values
@@ -193,6 +200,7 @@ def plot_metric_distributions(results_df):
         data.extend([base_values, finetuned_values])
         positions.extend([pos, pos + 1])
         tick_labels.extend([f"{label}\nBase", f"{label}\nQLoRA"])
+
         pos += 3
 
     plt.figure(figsize=(12, 6))
@@ -212,6 +220,8 @@ def plot_metric_distributions(results_df):
 def plot_summary_lengths(results_df):
     base_lengths = results_df[results_df["model"] == "base_led"]["generated_word_count"].values
     finetuned_lengths = results_df[results_df["model"] == "led_qlora_5000"]["generated_word_count"].values
+
+    # Reference summaries are the same for both models, so use only one copy.
     reference_lengths = (
         results_df[results_df["model"] == "base_led"]["reference_word_count"].values
     )
@@ -246,11 +256,11 @@ def main():
         raise ValueError("Base and fine-tuned prediction files have different lengths.")
 
     bert_device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Using BERTScore device: {bert_device}")
+    print(f"Using BERTScore/HSSM device: {bert_device}")
 
     rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
 
-    print(f"Loading HSSM sentence embedding model: {HSSM_MODEL_NAME}")
+    print(f"Loading local HSSM sentence embedding model: {HSSM_MODEL_NAME}")
     embedding_model = SentenceTransformer(HSSM_MODEL_NAME, device=bert_device)
 
     all_rows = []
