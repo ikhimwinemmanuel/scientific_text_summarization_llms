@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 import torch
@@ -38,6 +39,30 @@ def save_jsonl(records, path):
         for record in records:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
+def clean_generated_summary(summary):
+    """
+    Remove common copied section labels from generated summaries.
+    This keeps the generated content but removes formatting artefacts.
+    """
+    summary = summary.strip()
+
+    summary = re.sub(
+        r"^\s*(abstract|title|introduction|conclusion)\s*:\s*",
+        "",
+        summary,
+        flags=re.IGNORECASE,
+    )
+
+    summary = re.sub(
+        r"\b(title|introduction|conclusion|abstract)\s*:\s*",
+        "",
+        summary,
+        flags=re.IGNORECASE,
+    )
+
+    summary = re.sub(r"\s+", " ", summary).strip()
+
+    return summary
 
 def generate_summary(model, tokenizer, input_text, device):
     inputs = tokenizer(
@@ -72,7 +97,7 @@ def generate_summary(model, tokenizer, input_text, device):
         clean_up_tokenization_spaces=True,
     )
 
-    return summary.strip()
+    return clean_generated_summary(summary)
 
 
 def main():
