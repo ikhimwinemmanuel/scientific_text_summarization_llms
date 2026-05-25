@@ -99,6 +99,7 @@ def evaluate_model(records, model_label, rouge, embedding_model, bert_device):
         candidates,
         references,
         model_type=HSSM_MODEL_NAME,
+        num_layers=12,
         device=bert_device,
         verbose=True,
         rescale_with_baseline=False,
