@@ -269,6 +269,6 @@ The project implementation is complete. The repository contains the main scripts
 
 ## Author
 
-Ikhimwin Osakpamwan Emmanuel
-Master of Artificial Intelligence
-Western Sydney University
+- Ikhimwin Osakpamwan Emmanuel
+- Master of Artificial Intelligence
+- Western Sydney University
