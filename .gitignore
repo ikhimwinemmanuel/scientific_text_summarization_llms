@@ -1,23 +1,35 @@
+# Virtual environments and secrets
 venv/
 .env
+
+# Python cache and notebook checkpoints
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
+
+# OS files
 .DS_Store
+Thumbs.db
 
-# data 
-model_finetune/data/raw/*
-model_finetune/data/processed/*
+# Raw and processed data
+Model_Finetune/data/raw/
+Model_Finetune/data/processed/
 
+# Local model files
+Model_Finetune/models/
 
-# outputs 
-outputs/*.csv
+# Generated outputs
+Model_Finetune/outputs/
 
-# data
-Model_Finetune/data/raw/*
-Model_Finetune/data/processed/*
+# Large model and document files
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.pdf
 
-# outputs
-Model_Finetune/outputs/*
-
-# local model files
-Model_Finetune/models/*
+# Optional lowercase path protection
+model_finetune/data/raw/
+model_finetune/data/processed/
+model_finetune/models/
+model_finetune/outputs/
