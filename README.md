@@ -94,7 +94,7 @@ This keeps the repository lightweight and suitable for GitHub. The scripts and d
 
 The project follows a controlled before-and-after experimental design.
 
-First, the base LED model generates summaries for the fixed 370-paper test dataset created for this project. Then, the same base LED model is fine-tuned using QLoRA on a separate 5,000-record arXiv summarization training dataset sourced from the Hugging Face [`ccdv/arxiv-summarization`](https://huggingface.co/datasets/ccdv/arxiv-summarization) dataset. After fine-tuning, the QLoRA-adapted LED model generates summaries for the same 370 test papers.
+First, the base LED model generates summaries for the fixed 370-paper test dataset created for this project.The 370-paper test dataset was created by selecting fixed arXiv papers, downloading their PDFs, extracting the title, introduction, conclusion, and abstract, and then cleaning the extracted text for evaluation.Then, the same base LED model is fine-tuned using QLoRA on a separate 5,000-record arXiv summarization training dataset sourced from the Hugging Face [`ccdv/arxiv-summarization`](https://huggingface.co/datasets/ccdv/arxiv-summarization) dataset. After fine-tuning, the QLoRA-adapted LED model generates summaries for the same 370 test papers.
 
 
 Both models use the same input format and generation settings to ensure a fair comparison.
