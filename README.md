@@ -76,9 +76,7 @@ scientific_text_summarization_llms/
 
 ## Important Note on Large Files
 
-Large files are intentionally excluded from this GitHub repository using `.gitignore`.
-
-The following files and folders are not tracked:
+The following Large files are intentionally excluded from this GitHub repository using `.gitignore`. :
 
 * downloaded arXiv PDFs
 * processed datasets
@@ -87,8 +85,6 @@ The following files and folders are not tracked:
 * generated prediction files
 * evaluation outputs and charts
 * virtual environment files
-
-This keeps the repository lightweight and suitable for GitHub. The scripts and documentation are provided so that the workflow can be reproduced.
 
 ## Methodology Summary
 
